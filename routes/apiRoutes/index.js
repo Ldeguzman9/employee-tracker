@@ -1,13 +1,21 @@
 const express = require("express");
+const inquirer = require("inquirer");
 const router = express.Router();
+const connection = require("../../db/connection");
 
-router.use(require("./departmentRoutes"));
-router.use(require("./employeeRoutes"));
-router.use(require("./roleRoutes"));
+// router.use(require("./departmentRoutes"));
+// router.use(require("./employeeRoutes"));
+// router.use(require("./roleRoutes"));
 
-function promptQuestions() {
+connection.connect((err) => {
+  if (err) throw err;
+  promptQuestions();
+});
+
+const promptQuestions = () => {
   inquirer
     .prompt([
+      // Questions to build company index
       {
         type: "list",
         name: "task",
@@ -33,7 +41,7 @@ function promptQuestions() {
           displayRoles();
           break;
         case "View Employees":
-          displayEmployees();
+          displayEmployee();
           break;
         case "Add Department":
           addDepartment();
@@ -49,6 +57,132 @@ function promptQuestions() {
           break;
       }
     });
+};
+
+// function to display departments
+function displayDepartments() {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    promptQuestions();
+  });
 }
 
-module.exports = router;
+// function to display roles
+function displayRoles() {
+  connection.query("SELECT * FROM roles", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    promptQuestions();
+  });
+}
+
+// // function to display employees
+function displayEmployee() {
+  connection.query("SELECT * FROM employee", (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    promptQuestions();
+  });
+}
+
+// // function to add departments
+// function addDepartment();
+
+// //function to add role
+// function addRole();
+
+// //function to add employee
+function addEmployee() {
+  connection.query("SELECT * FROM roles", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "first_name",
+          message: "Please enter Employee's first name.",
+        },
+        {
+          type: "input",
+          name: "last_name",
+          message: "Please enter Employee's last name.",
+        },
+        {
+          type: "list",
+          name: "role_id",
+          message: "Please enter Employee's new role.",
+          choices: res.map((role) => role.title),
+        },
+      ])
+      .then((response) => {
+        const getRoleId = res.find((role) => role.title === response.role_id);
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: response.first_name,
+            last_name: response.last_name,
+            role_id: getRoleId.id,
+          },
+          (err) => {
+            if (err) throw err;
+            promptQuestions();
+          }
+        );
+      });
+  });
+}
+
+// // function to update employee role
+function updateEmployeeRole() {
+  connection.query("SELECT * FROM employee", (err, res) => {
+    if (err) throw err;
+
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Please select Employee you would like to update.",
+          choices: res.map((employee) => employee.first_name),
+        },
+      ])
+      .then((response) => {
+        const employeeName = response.employee;
+        connection.query("SELECT * FROM roles", (err, res) => {
+          if (err) throw err;
+
+          inquirer
+            .prompt([
+              {
+                type: "list",
+                name: "role_id",
+                message: "Please enter Employee's new role.",
+                choices: res.map((role) => role.title),
+              },
+            ])
+            .then(
+              (response) => {
+                const updatedRole = res.find(
+                  (role) => role.title === response.role_id
+                );
+                connection.query(
+                  "UPDATE employee SET ? WHERE first_name = " +
+                    "'" +
+                    employeeName +
+                    "'",
+                  console.log(updatedRole.id),
+                  { role_id: updatedRole.id }
+                );
+              },
+              (err) => {
+                if (err) throw err;
+                promptQuestions();
+              }
+            );
+        });
+      });
+  });
+}
+
+// module.exports = router;
