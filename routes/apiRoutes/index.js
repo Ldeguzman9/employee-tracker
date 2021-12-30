@@ -29,6 +29,7 @@ const promptQuestions = () => {
           "Add Role",
           "Add Employee",
           "Update Employee Role",
+          "Exit",
         ],
       },
     ])
@@ -55,6 +56,10 @@ const promptQuestions = () => {
         case "Update Employee Role":
           updateEmployeeRole();
           break;
+        case "Exit":
+          connection.end();
+          console.log("Bye");
+          break;
       }
     });
 };
@@ -77,7 +82,7 @@ function displayRoles() {
   });
 }
 
-// // function to display employees
+// function to display employees
 function displayEmployee() {
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
@@ -86,13 +91,68 @@ function displayEmployee() {
   });
 }
 
-// // function to add departments
-// function addDepartment();
+// function to add departments
+function addDepartment() {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "department",
+          message: "Please enter new department.",
+        },
+      ])
+      .then((response) => {
+        connection.query(
+          "INSERT INTO department SET?",
+          {
+            name: response.department,
+          },
+          (err) => {
+            if (err) throw err;
+            promptQuestions();
+          }
+        );
+      });
+  });
+}
 
 // //function to add role
-// function addRole();
+function addRole() {
+  // connection.query("SELECT * FROM deparment", (err, res) => {
+  //   if (err) throw err;
+  //   inquirer
+  //     .prompt([
+  //       {
+  //         type: "list",
+  //         name: "department",
+  //         message: "Please select the depatment.",
+  //         choices: res.map((department) => department.name),
+  //       },
+  //     ])
+  //     .then()
+  //     .then((response) => {
+  //       const getDepartmentId = res.find(
+  //         (department) => department.name === response.department_id
+  //       );
+  //       connection.query(
+  //         "INSERT INTO role SET?",
+  //         {
+  //           title: response.roles,
+  //           salary: response.salary,
+  //           department_id: getDepartmentId.id,
+  //         },
+  //         (err) => {
+  //           if (err) throw err;
+  //           promptQuestions();
+  //         }
+  //       );
+  //     });
+  // });
+}
 
-// //function to add employee
+//function to add employee
 function addEmployee() {
   connection.query("SELECT * FROM roles", (err, res) => {
     if (err) throw err;
@@ -133,7 +193,7 @@ function addEmployee() {
   });
 }
 
-// // function to update employee role
+// function to update employee role
 function updateEmployeeRole() {
   connection.query("SELECT * FROM employee", (err, res) => {
     if (err) throw err;
@@ -167,7 +227,7 @@ function updateEmployeeRole() {
                   (role) => role.title === response.role_id
                 );
                 connection.query(
-                  "UPDATE employee SET ? WHERE first_name = " +
+                  "UPDATE employee SET WHERE first_name = " +
                     "'" +
                     employeeName +
                     "'",
