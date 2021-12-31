@@ -3,10 +3,6 @@ const inquirer = require("inquirer");
 const router = express.Router();
 const connection = require("../../db/connection");
 
-// router.use(require("./departmentRoutes"));
-// router.use(require("./employeeRoutes"));
-// router.use(require("./roleRoutes"));
-
 connection.connect((err) => {
   if (err) throw err;
   promptQuestions();
@@ -118,38 +114,47 @@ function addDepartment() {
   });
 }
 
-// //function to add role
+//function to add role
 function addRole() {
-  // connection.query("SELECT * FROM deparment", (err, res) => {
-  //   if (err) throw err;
-  //   inquirer
-  //     .prompt([
-  //       {
-  //         type: "list",
-  //         name: "department",
-  //         message: "Please select the depatment.",
-  //         choices: res.map((department) => department.name),
-  //       },
-  //     ])
-  //     .then()
-  //     .then((response) => {
-  //       const getDepartmentId = res.find(
-  //         (department) => department.name === response.department_id
-  //       );
-  //       connection.query(
-  //         "INSERT INTO role SET?",
-  //         {
-  //           title: response.roles,
-  //           salary: response.salary,
-  //           department_id: getDepartmentId.id,
-  //         },
-  //         (err) => {
-  //           if (err) throw err;
-  //           promptQuestions();
-  //         }
-  //       );
-  //     });
-  // });
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "title",
+          message: "What role would you like to add?",
+        },
+        {
+          type: "input",
+          name: "salary",
+          message: " What is the salary?",
+        },
+        {
+          type: "list",
+          name: "department",
+          message: "What department does this belong to?",
+          choices: res.map((department) => department.title),
+        },
+      ])
+      .then(function (response) {
+        const getDepartmentId = res.find(
+          (deparment) => department.title === response.department_id
+        );
+        connection.query(
+          "INSERT INTO roles SET ?",
+          {
+            role: response.title,
+            salary: response.salary,
+            department_id: getDepartmentId.id,
+          },
+          function (err, res) {
+            if (err) throw err;
+            promptQuestions();
+          }
+        );
+      });
+  });
 }
 
 //function to add employee
@@ -244,5 +249,3 @@ function updateEmployeeRole() {
       });
   });
 }
-
-// module.exports = router;
