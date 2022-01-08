@@ -1,4 +1,4 @@
-INSERT INTO department (name)
+INSERT INTO department (sector)
 VALUES
   ('General Management'),
   ('Marketing'),

@@ -132,14 +132,14 @@ function addRole() {
         },
         {
           type: "list",
-          name: "department",
+          name: "department_id",
           message: "What department does this belong to?",
-          choices: res.map((department) => department.title),
+          choices: res.map((department) => department.sector),
         },
       ])
-      .then(function (response) {
+      .then((response) => {
         const getDepartmentId = res.find(
-          (deparment) => department.title === response.department_id
+          (department) => department.sector === response.department_id
         );
         connection.query(
           "INSERT INTO roles SET ?",
@@ -148,7 +148,7 @@ function addRole() {
             salary: response.salary,
             department_id: getDepartmentId.id,
           },
-          function (err, res) {
+          (err) => {
             if (err) throw err;
             promptQuestions();
           }
@@ -177,11 +177,11 @@ function addEmployee() {
           type: "list",
           name: "role_id",
           message: "Please enter Employee's new role.",
-          choices: res.map((role) => role.title),
+          choices: res.map((roles) => roles.title),
         },
       ])
       .then((response) => {
-        const getRoleId = res.find((role) => role.title === response.role_id);
+        const getRoleId = res.find((roles) => roles.title === response.role_id);
         connection.query(
           "INSERT INTO employee SET ?",
           {
@@ -222,24 +222,27 @@ function updateEmployeeRole() {
               {
                 type: "list",
                 name: "role_id",
-                message: "Please enter Employee's new role.",
-                choices: res.map((role) => role.title),
+                message: "Please select Employee's new role.",
+                choices: res.map((roles) => roles.title),
               },
             ])
             .then(
               (response) => {
                 const updatedRole = res.find(
-                  (role) => role.title === response.role_id
+                  (roles) => roles.title === response.role_id
                 );
                 connection.query(
-                  "UPDATE employee SET WHERE first_name = " +
-                    "'" +
+                  "UPDATE employee SET first_name = " +
                     employeeName +
+                    " WHERE role_id = " +
+                    "'" +
+                    updatedRole +
                     "'",
                   console.log(updatedRole.id),
                   { role_id: updatedRole.id }
                 );
               },
+              //console.table(res),
               (err) => {
                 if (err) throw err;
                 promptQuestions();
