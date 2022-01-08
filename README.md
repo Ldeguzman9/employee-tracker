@@ -37,10 +37,10 @@ This application allows users to generate an employee database. [Name, Departmen
 # employee-tracker Screen Shots
 
 - **Terminal**
-  ![Terminal Prompts](https://github.com/Ldeguzman9/team-profile-generator/blob/develop/assets/images/terminal-prompts-screenshot.png?raw=true)
+  ![Terminal Prompts](https://github.com/Ldeguzman9/employee-tracker/blob/main/assets/images/Screenshot%202022-01-07%20at%206.41.45%20PM.png?raw=true)
 
 - **Employee Database**
-  ![Employee Database](https://github.com/Ldeguzman9/team-profile-generator/blob/develop/assets/images/team-profile-screenshot.png?raw=true)
+  ![Employee Database](https://github.com/Ldeguzman9/employee-tracker/blob/main/assets/images/employee%20names.png?raw=true)
 
 # Technical Skills
 
